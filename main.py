@@ -3,6 +3,7 @@
 
 # Importar a biblioteca "pandas"
 import pandas as pd
+import numpy as np
 
 import os
 
@@ -23,15 +24,25 @@ colunas = ['id', 'title', 'releaseDate', 'rating', 'genres', 'description',
        'top_cast']
 
 for col in colunas:
+    # Identificando o tipo de dado da coluna
+    tipo_dado = df[col].dtype
+    print(f"A coluna '{col}' é do tipo {tipo_dado}.")
+
     # Recebendo a soma de dados nulos na coluna
     nulos = df[col].isnull().sum()
     print(f"A coluna '{col}' possui {nulos} valores nulos.")
 
     if nulos > 0:
-        # Substituindo os valores nulos
+      if tipo_dado == 'object':
         df[col] = df[col].fillna('Não informado')
+      elif np.issubdtype(tipo_dado, np.number):
+        df[col] = df[col].fillna(0)
+      elif np.issubdtype(tipo_dado, np.datetime64):
+        df[col] = df[col].fillna(pd.Timestamp('0000-00-00'))
+      else:
+        df[col] = df[col].fillna('Desconhecido')
 
-        print(f"A coluna '{col}' foi arrumada.")
+      print(f"A coluna '{col}' foi arrumada.")
 
 # Localizando e armazenando os registros com o releaseDate igual a 2021
 df_2021 = df.loc[df['releaseDate'].str.startswith('2021')]
@@ -45,7 +56,7 @@ print(df_2022)
 df_2023 = df.loc[df['releaseDate'].str.startswith('2023')]
 print(df_2023)
 
-pasta_destino = r"arquivos/datas"
+pasta_destino = r"arquivos/datas/movies"
 
 nome_arquivo = "movies_2021.xlsx"
 caminho_completo = os.path.join(pasta_destino, nome_arquivo)
@@ -85,6 +96,8 @@ consolidado.to_csv(caminho_completo, index=False, sep=",")
 
 # ------------------------------------------------------------------------------------------- #
 
+"""
+
 # Carrega o segundo arquivo CSV
 df = pd.read_csv(r"arquivos/movies_reviews.csv")
 
@@ -118,7 +131,7 @@ print(df_2022)
 df_2023 = df.loc[df['date'].str.startswith('2023')]
 print(df_2023)
 
-pasta_destino = r"arquivos/datas"
+pasta_destino = r"arquivos/datas/reviews"
 
 nome_arquivo = "movies_reviews_2021.xlsx"
 caminho_completo = os.path.join(pasta_destino, nome_arquivo)
@@ -155,3 +168,5 @@ consolidado.to_csv(caminho_completo, index=False, sep=",")
 nome_arquivo =  "movies_reviews_consolidado.txt"
 caminho_completo = os.path.join(pasta_destino, nome_arquivo)
 consolidado.to_csv(caminho_completo, index=False, sep=",")
+
+"""
