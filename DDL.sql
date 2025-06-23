@@ -64,3 +64,19 @@ CREATE TABLE review (
     FOREIGN KEY (movie_id) REFERENCES movies(movie_id)
 );
 GO
+
+-- Mostrar registros da tabela Genres
+SELECT * FROM genres;
+GO
+
+-- Mostrar registros da tabela Movies
+SELECT * FROM movies;
+GO
+
+-- Mostrar registros da tabela Genres
+SELECT * FROM movie_genres;
+GO
+
+-- Mostrar registros da tabela Genres
+SELECT * FROM review;
+GO
