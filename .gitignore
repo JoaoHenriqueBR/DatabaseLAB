@@ -2,3 +2,5 @@
 arquivos/consolidated
 Laboratório de Banco de Dados.sqlproj
 arquivos/datas
+*.xlsx
+*.csv
