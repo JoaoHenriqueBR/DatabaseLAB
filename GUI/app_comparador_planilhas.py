@@ -76,45 +76,55 @@ if arquivo1 and arquivo2:
                 "Escolha a coluna da Planilha 2",
                 df2.columns
             )
+            
+        st.subheader("Comparar Planilhas")
 
-        if st.button("Comparar Planilhas", type="primary"):
+        tipo = st.radio(
+            "Tipo de comparação",
+            [
+                "Registros Iguais",
+                "Somente Diferenças"
+            ],
+            horizontal=True
+        )
+
+        if st.button("Comparar", type="primary"):
 
             with st.spinner("Comparando..."):
 
-                merged_df = pd.merge(
-                    df1,
-                    df2,
-                    left_on=coluna1,
-                    right_on=coluna2,
-                    how="inner"
-                )
+                if tipo == "Registros Iguais":
+                    merged_df = pd.merge(
+                        df1,
+                        df2,
+                        left_on=coluna1,
+                        right_on=coluna2,
+                        how="inner"
+                    )
 
-                if coluna1 != coluna2:
+                else:
+                    merged_df = pd.merge(
+                        df1,
+                        df2,
+                        left_on=coluna1,
+                        right_on=coluna2,
+                        how="outer",
+                        indicator=True
+                    )
+
+                    merged_df = merged_df[
+                        merged_df["_merge"] != "both"
+                    ].drop(columns="_merge")
+
+                if coluna1 != coluna2 and coluna2 in merged_df.columns:
                     merged_df = merged_df.drop(columns=[coluna2])
-
-            st.success(f"Comparação concluída! {len(merged_df)} registros encontrados.")
-
-            st.subheader("Resultado")
-
-            st.dataframe(
-                merged_df,
-                use_container_width=True,
-                height=500
-            )
-
-            excel = merged_df.to_excel(
-                "temp.xlsx",
-                index=False,
-                engine="openpyxl"
-            )
-
-            with open("temp.xlsx", "rb") as file:
-                st.download_button(
-                    label="📥 Baixar Resultado",
-                    data=file,
-                    file_name="consolidado.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                )
+                
+                st.success(f"Comparação concluída! {len(merged_df)} registros encontrados.") 
+                st.subheader("Resultado") 
+                st.dataframe( merged_df, use_container_width=True, height=500 ) 
+                excel = merged_df.to_excel( "temp.xlsx", index=False, engine="openpyxl" ) 
+                
+                with open("temp.xlsx", "rb") as file: 
+                    st.download_button( label="📥 Baixar Resultado", data=file, file_name="consolidado.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" )
 
     except Exception as e:
         st.error(f"Ocorreu um erro: {e}")
